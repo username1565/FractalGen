@@ -18,7 +18,7 @@ namespace fractalgen
 			//This is usage for standalone exe.
 			System.Console.WriteLine(	"\n=================================================================\n"	+
 										">fractalgen.exe [pathway] [PNG-width number, pixels] [PNG-height number, pixels]\n");
-			System.Console.WriteLine(	">fractalgen.exe \"containers/\" 1024 768"								+
+			System.Console.WriteLine(	">fractalgen.exe \"My_folder_for_images/\" 1024 768"								+
 										"\n=================================================================\n");
 			
 			//by default, PNG resolution is 1920x1080 (FullHD), 	if not specified in arguments...
@@ -43,7 +43,8 @@ namespace fractalgen
 			else{
 				int temp_integer;													//define temp integer
 				
-				if(
+				if(args.Length==0){}
+				else if(
 						( args.Length>=2 )
 					|| 	(
 								args[0]!=""
@@ -90,6 +91,7 @@ namespace fractalgen
 				result = new FractalGen().GenerateToFile(ref pathway, ref width, ref height);
 				System.Console.WriteLine("Done!");
 			}
+			Console.WriteLine("Press any key to exit...");
 			Console.ReadKey();		//if "void Main" - don't close window, for standalone exe
 			//return result;			//if "string Main_" - return string after including
 		}
@@ -178,7 +180,8 @@ namespace fractalgen
 						int len = readText[str].Length;
 					
 						//add words from the file to empty lists
-						if(readText[str].StartsWith("who: ")){
+						if(readText[str].StartsWith("#")){continue;}
+						else if(readText[str].StartsWith("who: ")){
 							who.InsertRange(0, readText[str].Substring(5, len-5).Split(new string[] {"; "}, StringSplitOptions.None));
 						}
 						else if(readText[str].StartsWith("which: ")){
@@ -437,6 +440,15 @@ namespace fractalgen
 			}
 			//bits for colors in bitmap was been changed randomly...
 			
+			try{
+				if( !Directory.Exists(path+Path.DirectorySeparatorChar) ){
+					DirectoryInfo di = Directory.CreateDirectory(path+Path.DirectorySeparatorChar);	//Try to create the directory if this does not exists
+					Console.WriteLine("Directory at path not found and created: "+di.FullName);
+				} 
+			}
+			catch (IOException ioex){
+				Console.WriteLine(ioex.Message);
+			}
 			string pathway = ((path=="")?"":path+Path.DirectorySeparatorChar)+Guid.NewGuid().ToString();
 			
 			//b.Save(pathway+"_orig.png"); 																			//save previous not modified picture, as png-file
