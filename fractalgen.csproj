@@ -6,7 +6,7 @@
     <ProjectGuid>{A1228F21-FBA3-4C0B-9771-94B815B0D0BD}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>fractalgen</RootNamespace>
-    <AssemblyName>fractalgen</AssemblyName>
+    <AssemblyName>fractalgen_v1.4</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
