@@ -1,19 +1,28 @@
-﻿using System;
+//Fractalgen_1.3 + fractalgen_words.txt
+using System;
 using System.Drawing;					//draw Image
 using System.Collections.Generic;		//to using "List"
-using System.IO;						//using "File" to check words.txt.
+using System.IO;						//using "File" to check fractalgen_words.txt.
 
 namespace fractalgen
 {
-	class Program
+	public class Program
 	{
-		static void Main(string[] args)	//two arguments can be specified - PNG width and height
+		//change to Main_ to Main to compile this cs-file in standalone program.
+		public static void Main(string[] args)	//two arguments can be specified - PNG width and height
+		//public static string Main_(string[] args)		//return string, after:
+													//using fractalgen;
+													//string fractalgen_result = fractalgen.Program.Main_(new string[]{splitted[2], splitted[3]});
 		{
 			//display info with "first two arguments setting width and height for PNG"
+			
+			
+			//This is usage for standalone exe.
 			System.Console.WriteLine(	"\n=================================================================\n"+
 										">fractalgen.exe [PNG-width number, pixels] [PNG-height number, pixels]\n");
 			System.Console.WriteLine(	">fractalgen.exe 1024 768"+
 										"\n=================================================================\n");
+			
 		
 		/*
 			// The Length property provides the number of array elements
@@ -24,9 +33,11 @@ namespace fractalgen
 			//by default, PNG resolution is 1920x1080 (FullHD), 	if not specified in arguments...
 			int width 	= 	1920;
 			int height 	= 	1080;
-
+			string result = "";
+			
 			if(args.Length>2){ //if more than two arguments specified...
-				System.Console.WriteLine("Too many arguments specified...\nSTOP!");	//show error and stop program...
+				result = "Too many arguments specified... Only width and height allowed... \nSTOP!";
+				System.Console.WriteLine(result);	//show error and stop program...
 			}
 			else{
 				if(args.Length>=1){	//if more than 1 arguments specified this containing width
@@ -61,14 +72,15 @@ namespace fractalgen
 			
 				//generate fractal PNG, with this width and height
 				System.Console.WriteLine("Please, wait, generating fractal...");
-				new FractalGen().GenerateToFile(ref width, ref height);
+				result = new FractalGen().GenerateToFile(ref width, ref height);
 				System.Console.WriteLine("Done!");
 			}
-			Console.ReadKey();
+			Console.ReadKey();		//if "void Main" - don't close window, for standalone exe
+			//return result;			//if "string Main_" - return string after including
 		}
 	}
 
-	class TextGen
+	public class TextGen
 	{
 		//who, which, how, [do it]
 		public static List<string> who = new List<string>(){};						//define empty lists
@@ -128,19 +140,21 @@ namespace fractalgen
 			};
 			
 			try{
-				System.IO.File.WriteAllLines("words.txt", verbList);
-				Console.WriteLine("words.txt successfully saved");
+				//System.IO.File.WriteAllLines("fractalgen_words.txt", verbList);
+				string [] verbList_arr = verbList.ConvertAll( x => x.ToString() ).ToArray();
+				System.IO.File.WriteAllLines("fractalgen_words.txt", verbList_arr);
+				Console.WriteLine("fractalgen_words.txt successfully saved");
 			}catch (Exception e){
-				Console.WriteLine("Error saving words.txt: "+e.ToString());
+				Console.WriteLine("Error saving fractalgen_words.txt: "+e.ToString());
 			}			
 		}
 
 		public string Generate(int seed)
 		{
 			bool save = false;
-			if (File.Exists("words.txt")) {												//if exists - take words from this file
-				//Console.WriteLine("words.txt - The file exists.");
-				string[] readText = File.ReadAllLines("words.txt");
+			if (File.Exists("fractalgen_words.txt")) {												//if exists - take words from this file
+				//Console.WriteLine("fractalgen_words.txt - The file exists.");
+				string[] readText = File.ReadAllLines("fractalgen_words.txt");
 				//Console.WriteLine("array length: "+readText.Length);
 				if(readText.Length==0){
 					set_default_words();
@@ -179,12 +193,12 @@ namespace fractalgen
 							save = true;
 						}
 						else{
-							Console.WriteLine("Invalid line. Rename words.txt and restart this program to see format of this file. ");
+							Console.WriteLine("Invalid line. Rename fractalgen_words.txt and restart this program to see format of this file. ");
 						}
 					}
 				}
 			}else{																		//else - use default words and save this to file.
-				Console.WriteLine("words.txt - file not exists. Generate this...");
+				Console.WriteLine("fractalgen_words.txt - file not exists. Generate this...");
 				set_default_words();
 				save = true;
 			}
@@ -207,9 +221,9 @@ namespace fractalgen
 		Color col;
 		Color[] colors;
 
-		public void GenerateToFile(ref int w, ref int h)//PNG width and height from main function, picture size, bytes, filesize, bitlength
+		public string GenerateToFile(ref int w, ref int h)//PNG width and height from main_ function, picture size, bytes, filesize, bitlength
 		{
-			System.Console.WriteLine("Generating PNG: width {0}, height {1}", w, h);
+			//System.Console.WriteLine("Generating PNG: width {0}, height {1}", w, h);
 
 			Random rnd = new Random();
 			Byte[] clr = new Byte[28];
@@ -434,7 +448,12 @@ namespace fractalgen
 			//bits for colors in bitmap was been changed randomly...
 			
 			//b.Save(Guid.NewGuid().ToString() + ".png"); 				//save previous not modified picture, as png-file
-			newBitmap.Save(Guid.NewGuid().ToString() + ".png"); 		//save modified bitmap with LSB noise, as png-file.
+			//newBitmap.Save(Guid.NewGuid().ToString() + ".png"); 		//save modified bitmap with LSB noise, as png-file.
+			string pathway = "containers"+Path.DirectorySeparatorChar+Guid.NewGuid().ToString() + ".png";
+			newBitmap.Save(pathway); 		//save modified bitmap with LSB noise, as png-file.
+			string saved = "(width = "+w+", height = "+h+")\n"+"Saved as: "+pathway;
+			Console.WriteLine(saved);
+			return saved;
 			//now, this avaliable for comparison
 		}
 
