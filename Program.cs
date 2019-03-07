@@ -29,11 +29,12 @@ namespace fractalgen
 			
 			int skip = 0;
 			
-			Console.WriteLine("arguments\n");
-			for(int i=0; i<args.Length; i++){
-				Console.Write(args[i]+" ");
-			}
-			Console.WriteLine("end arguments");
+			//display arguments	to test
+			//Console.WriteLine("arguments\n");
+			//for(int i=0; i<args.Length; i++){
+			//	Console.Write(args[i]+" ");
+			//}
+			//Console.WriteLine("end arguments");
 			
 			if(args.Length>3){ //if more than two arguments specified...
 				result = "Too many arguments specified... Only width and height allowed... \nSTOP!";
@@ -156,7 +157,7 @@ namespace fractalgen
 
 			try{
 				System.IO.File.WriteAllLines("fractalgen_words.txt", wordsList);
-				Console.WriteLine("fractalgen_words.txt successfully saved");
+				Console.WriteLine("fractalgen_words.txt successfully saved.");
 			}catch (Exception e){
 				Console.WriteLine("Error saving fractalgen_words.txt: "+e.ToString());
 			}			
