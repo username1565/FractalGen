@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Drawing;
+using System.Drawing;					//draw Image
+using System.Collections.Generic;		//to using "List"
+using System.IO;						//using "File" to check words.txt.
 
 namespace fractalgen
 {
@@ -62,14 +64,20 @@ namespace fractalgen
 				new FractalGen().GenerateToFile(ref width, ref height);
 				System.Console.WriteLine("Done!");
 			}
+			Console.ReadKey();
 		}
 	}
 
 	class TextGen
 	{
-
 		//who, which, how, [do it]
-		static string[] who = {
+		public static List<string> who = new List<string>(){};						//define empty lists
+		public static List<string> which = new List<string>(){};
+		public static List<string> how = new List<string>(){};
+		public static List<string> doit = new List<string>(){};
+		
+		//Defatul values
+		public static string[] who_default = 	new string[] {						//who
 			"хомячина", "рассвет", "ропот", "рот", "пенис", "суд", "день", "фрактал", "паскудник", "дебил", 
 			"обоссан", "паршивец", "тварь", "там", 
 			"где-то", "как же", "но,", "почему", "это же", "дизайнер", "экстремист", "наркоман",
@@ -78,7 +86,7 @@ namespace fractalgen
 			"биточек", "профсоюз", "самолёт-цистерна", "гигантоман", "авиасекстант", "химизатор", "синтез", "сахарин",
 			"мудило"
 		};
-		static string[] which = {
+		public static string[] which_default =	new string[] {						//which
 			"травленый", "ярмарочный",
 			"двадцатиградусный", "горько-солёный", "садочный", "заседательский", "просветительский",
 			"безмятежный", "неистовый", "паршивый", "обоссаный", "грядущий", "бредущий", "милый",
@@ -86,14 +94,14 @@ namespace fractalgen
 			"безмозглый", "настроенный", "настороженный", "подлинный", "остающийся", "несмеявшийся", "отсталый", "просящий",
 			"восьмилетний","неохотно","частнопрактикующий","грудастый","взлетающий","упёртый","всратый","задрыпанный"
 		};
-		static string[] how = {
+		public static string[] how_default =	new string[] {						//how
 			"на рассвете", "неистово",  "пожевывая", "устало", "подлинно", "нормально", "просветительски", "безмозгло",
 			"размыто", "скомканно", "дёрганно", "головкой", "неловко", "зашкварно", "тайно", "открыто",
 			"угарно", "попарно", "топорно", "чопорно", "нанотехнологично", "прилично", "лично", "отлично",
 			"закрыто",  "говнисто", "с лопаты", "нормально", "вовек", "троллируя", 
 			"равноправно","электротехнично","псевдоморфозно","как ниндзя","забористо","упёрто"
 		};
-		static string[] doit = {
+		public static string[] doit_default =	new string[] {						//doit
 			"проткнул", "причалил",
 			"обоссал", "лизал", "топтал", "таскал", "желал", "бежал", "накалывал", "ловил", "гнобил", "топил",
 			"душил", "ушел", "настал", "хочет", "боится", "ест", "живёт", "умрёт", "омичевал", "напугал", "клонировал",
@@ -101,13 +109,91 @@ namespace fractalgen
 			"самоутешился","поделился","раскрасил","вмешался","надкусил", "умотал", "ужрался","жиреет",
 			"упрыгивает", "долбится", "выпендривается"
 		};
+		
+		public static void set_default_words(){
+			//Add default words
+			who.InsertRange		(0, who_default);
+			which.InsertRange	(0, which_default);
+			how.InsertRange		(0,	how_default);
+			doit.InsertRange	(0,	doit_default);			
+		}
+		
+		public static void save_to_file(){
+			List<string> verbList = new List<string>()
+			{
+				"who: "+String.Join("; ", who.ToArray()),
+				"which: "+String.Join("; ", which.ToArray()),
+				"how: "+String.Join("; ", how.ToArray()),
+				"doit: "+String.Join("; ", doit.ToArray())
+			};
+			
+			try{
+				System.IO.File.WriteAllLines("words.txt", verbList);
+				Console.WriteLine("words.txt successfully saved");
+			}catch (Exception e){
+				Console.WriteLine("Error saving words.txt: "+e.ToString());
+			}			
+		}
 
 		public string Generate(int seed)
 		{
+			bool save = false;
+			if (File.Exists("words.txt")) {												//if exists - take words from this file
+				//Console.WriteLine("words.txt - The file exists.");
+				string[] readText = File.ReadAllLines("words.txt");
+				//Console.WriteLine("array length: "+readText.Length);
+				if(readText.Length==0){
+					set_default_words();
+					save = true;
+				}
+				else{
+					for(int str = 0; str<readText.Length; str++){
+						//Console.WriteLine("\n\ncurrent string: "+readText[str]);
+						int len = readText[str].Length;
+					
+						//add words from the file to empty lists
+						if(readText[str].StartsWith("who: ")){
+							who.InsertRange(0, readText[str].Substring(5, len-5).Split(new string[] {"; "}, StringSplitOptions.None));
+						}
+						else if(readText[str].StartsWith("which: ")){
+							which.InsertRange(0, readText[str].Substring(7, len-7).Split(new string[] {"; "}, StringSplitOptions.None));
+						}
+						else if(readText[str].StartsWith("how: ")){
+							how.InsertRange(0, readText[str].Substring(5, len-5).Split(new string[] {"; "}, StringSplitOptions.None));
+						}
+						else if(readText[str].StartsWith("doit: ")){
+							doit.InsertRange(0, readText[str].Substring(6, len-6).Split(new string[] {"; "}, StringSplitOptions.None));
+						}
+						//set default values, if strings is invalid, and save this then
+						else if(str==0){
+							who.InsertRange		(0, who_default);
+							save = true;
+						}else if(str==1){
+							which.InsertRange	(0, which_default);
+							save = true;
+						}else if(str==2){
+							how.InsertRange		(0,	how_default);
+							save = true;
+						}else if(str==3){
+							doit.InsertRange	(0,	doit_default);
+							save = true;
+						}
+						else{
+							Console.WriteLine("Invalid line. Rename words.txt and restart this program to see format of this file. ");
+						}
+					}
+				}
+			}else{																		//else - use default words and save this to file.
+				Console.WriteLine("words.txt - file not exists. Generate this...");
+				set_default_words();
+				save = true;
+			}
+			if(save == true){save_to_file();}
+
 			var r = new Random(seed);
 			return 	(
-							who[r.Next()%who.Length]	+	" "	+	which[r.Next()%which.Length]	+	" "
-						+ 	how[r.Next()%how.Length]	+	" "	+	doit[r.Next()%doit.Length]
+							who[r.Next()%who.Count]	+	" "	+	which[r.Next()%which.Count]	+	" "
+						+ 	how[r.Next()%how.Count]	+	" "	+	doit[r.Next()%doit.Count]
 					);		//generate text string
 		}
 	}
@@ -207,6 +293,7 @@ namespace fractalgen
 			//fill top and bottom text...
 			int text_size = 22; 											//by default fontsize for text size is 22
 			
+/*
 			//change font size, by PNG width
 			if(w>=1920){text_size = 22;}
 			else if(w>=1366){text_size = 18;}
@@ -215,7 +302,14 @@ namespace fractalgen
 			else if(w>=300){text_size = 8;}
 			else if(w>=150){text_size = 8;}
 			else{text_size = 0;}
+*/
+			//Можно обойтись одной операцией деления и одной операцией округления
+			text_size = (int)Math.Floor((double)((w+h)/100.0));
+			text_size = (text_size>8)	?text_size :0;
 
+
+
+		
 			var strings1 = 1;	//calculate strings for top text			//for test, generate PNG 150x150
 			var strings2 = 1;	//calculate strings for bottom text
 			
