@@ -303,10 +303,14 @@ namespace fractalgen
 			else if(w>=150){text_size = 8;}
 			else{text_size = 0;}
 */
+/*
 			//Можно обойтись одной операцией деления и одной операцией округления
 			text_size = (int)Math.Floor((double)((w+h)/100.0));
 			text_size = (text_size>8)	?text_size :0;
-
+*/
+			//change font size, by PNG width and height
+			text_size = (w+h) >> 7; 			// divide by 128 via shifting
+			if (text_size < 8)	text_size = 0;
 
 
 		
