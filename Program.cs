@@ -1,4 +1,4 @@
-//Fractalgen_1.3 + fractalgen_words.txt
+﻿//Fractalgen_1.3 + fractalgen_words.txt
 using System;
 using System.Drawing;					//draw Image
 using System.Collections.Generic;		//to using "List"
@@ -8,57 +8,71 @@ namespace fractalgen
 {
 	public class Program
 	{
-		//change to Main_ to Main to compile this cs-file in standalone program.
+		//change ( ("string Main_" -> "void Main") and ("return string" -> "Console.ReadKey()") ) -> to compile this cs-file in standalone program.
 		public static void Main(string[] args)	//two arguments can be specified - PNG width and height
 		//public static string Main_(string[] args)		//return string, after:
 													//using fractalgen;
 													//string fractalgen_result = fractalgen.Program.Main_(new string[]{splitted[2], splitted[3]});
 		{
-			//display info with "first two arguments setting width and height for PNG"
-			
-			
+			//display info with "first three arguments setting width and height for PNG"
 			//This is usage for standalone exe.
-			System.Console.WriteLine(	"\n=================================================================\n"+
-										">fractalgen.exe [PNG-width number, pixels] [PNG-height number, pixels]\n");
-			System.Console.WriteLine(	">fractalgen.exe 1024 768"+
+			System.Console.WriteLine(	"\n=================================================================\n"	+
+										">fractalgen.exe [pathway] [PNG-width number, pixels] [PNG-height number, pixels]\n");
+			System.Console.WriteLine(	">fractalgen.exe \"containers/\" 1024 768"								+
 										"\n=================================================================\n");
 			
-		
-		/*
-			// The Length property provides the number of array elements
-			System.Console.WriteLine("parameter count = {0}", args.Length);	//show number of arguments
-			for (int i = 0; i < args.Length; i++)	//for each argument
-			{System.Console.WriteLine("Arg[{0}] = [{1}]", i, args[i]);} //just display this...
-		*/		
 			//by default, PNG resolution is 1920x1080 (FullHD), 	if not specified in arguments...
 			int width 	= 	1920;
 			int height 	= 	1080;
+			string pathway = "";
 			string result = "";
 			
-			if(args.Length>2){ //if more than two arguments specified...
+			int skip = 0;
+			
+			Console.WriteLine("arguments\n");
+			for(int i=0; i<args.Length; i++){
+				Console.Write(args[i]+" ");
+			}
+			Console.WriteLine("end arguments");
+			
+			if(args.Length>3){ //if more than two arguments specified...
 				result = "Too many arguments specified... Only width and height allowed... \nSTOP!";
 				System.Console.WriteLine(result);	//show error and stop program...
 			}
 			else{
-				if(args.Length>=1){	//if more than 1 arguments specified this containing width
+				int temp_integer;													//define temp integer
+				
+				if(
+						( args.Length>=2 )
+					|| 	(
+								args[0]!=""
+							&& 	!int.TryParse(args[0], out temp_integer)
+					)
+				){						//if more than 1 arguments specified this containing width
+					if(args[0]!="" && !int.TryParse(args[0], out temp_integer)){	//first argument can be a pathway to saving PNG.
+						pathway = args[0];
+						skip = 1;
+					}
+				}
+				if(args.Length>=1 || args.Length>=2){	//if more than 1 arguments specified this containing width
 					//check is next arguments an integers?..
-					int temp_integer;													//define temp integer
-					bool isNumericWidth = int.TryParse(args[0], out temp_integer);		//is numeric? true, false
+					bool isNumericWidth = int.TryParse(args[0+( (args.Length>=2)?skip:0 )], out temp_integer);		//is numeric? true, false
 			
 					if(isNumericWidth==true){											//if numeric
-						width = int.Parse(args[0]);										//to int
+						width = int.Parse(args[0+( (args.Length>=2)?skip:0 )] );										//to int
 					}
-					else{//leave default value and show error...
+					else{
+						//leave default value and show error...
 						System.Console.WriteLine(	"Width argument - not a number, this was been specified incorrectly. \n"+
 													"PNG width will be default: {0}",
 													width
 						);
 					}
 			
-					if(args.Length==2){ //if second argument specified
-						bool isNumericheight = int.TryParse(args[1], out temp_integer);	//is numeric? true, false
+					if(args.Length==2 || args.Length==3){ //if second argument specified
+						bool isNumericheight = int.TryParse(args[1+ ( (args.Length==2)?skip:0 )], out temp_integer);	//is numeric? true, false
 						if(isNumericheight==true){										//check this
-							height = int.Parse(args[1]);	 							//write as integer
+							height = int.Parse(args[1+ ( (args.Length==3)?skip:0) ]);	 							//write as integer
 						}
 						else{//leave default value end show error...
 							System.Console.WriteLine(
@@ -72,7 +86,7 @@ namespace fractalgen
 			
 				//generate fractal PNG, with this width and height
 				System.Console.WriteLine("Please, wait, generating fractal...");
-				result = new FractalGen().GenerateToFile(ref width, ref height);
+				result = new FractalGen().GenerateToFile(ref pathway, ref width, ref height);
 				System.Console.WriteLine("Done!");
 			}
 			Console.ReadKey();		//if "void Main" - don't close window, for standalone exe
@@ -91,27 +105,27 @@ namespace fractalgen
 		//Defatul values
 		public static string[] who_default = 	new string[] {						//who
 			"хомячина", "рассвет", "ропот", "рот", "пенис", "суд", "день", "фрактал", "паскудник", "дебил", 
-			"обоссан", "паршивец", "тварь", "там", 
-			"где-то", "как же", "но,", "почему", "это же", "дизайнер", "экстремист", "наркоман",
-			"лезвие", "слегка", "порноактёр", "чебурек", "человек", "бетон", "волюнтарист", "щелчок", "рубака",
+			"обоссан", "паршивец", "тварь", "дизайнер", "экстремист", "наркоман",
+			"слегка", "порноактёр", "чебурек", "человек", "бетон", "волюнтарист", "щелчок", "рубака",
 			"групповод", "медвежоночек", "шахматист", "децибел", "яблочник", "плотоход",
-			"биточек", "профсоюз", "самолёт-цистерна", "гигантоман", "авиасекстант", "химизатор", "синтез", "сахарин",
-			"мудило"
+			"биточек", "профсоюз", "самолёт-цистерна", "гигантоман", "авиасекстант", "химизатор", "синтез",
+			"сахарин", "мудило",
+			"там", "где-то", "как же", "но,", "почему", "это же"
 		};
 		public static string[] which_default =	new string[] {						//which
-			"травленый", "ярмарочный",
+			"c лезвием", "травленый", "ярмарочный",
 			"двадцатиградусный", "горько-солёный", "садочный", "заседательский", "просветительский",
 			"безмятежный", "неистовый", "паршивый", "обоссаный", "грядущий", "бредущий", "милый",
 			"усталый", "нормальный", "паскудный", "растрёпанный", "библиотечный", "убийственный", "позорный",
 			"безмозглый", "настроенный", "настороженный", "подлинный", "остающийся", "несмеявшийся", "отсталый", "просящий",
-			"восьмилетний","неохотно","частнопрактикующий","грудастый","взлетающий","упёртый","всратый","задрыпанный"
+			"восьмилетний","частнопрактикующий","грудастый","взлетающий","упёртый","всратый","задрыпанный"
 		};
 		public static string[] how_default =	new string[] {						//how
 			"на рассвете", "неистово",  "пожевывая", "устало", "подлинно", "нормально", "просветительски", "безмозгло",
 			"размыто", "скомканно", "дёрганно", "головкой", "неловко", "зашкварно", "тайно", "открыто",
 			"угарно", "попарно", "топорно", "чопорно", "нанотехнологично", "прилично", "лично", "отлично",
 			"закрыто",  "говнисто", "с лопаты", "нормально", "вовек", "троллируя", 
-			"равноправно","электротехнично","псевдоморфозно","как ниндзя","забористо","упёрто"
+			"равноправно","электротехнично","псевдоморфозно","как ниндзя","забористо","упёрто", "неохотно"
 		};
 		public static string[] doit_default =	new string[] {						//doit
 			"проткнул", "причалил",
@@ -131,18 +145,17 @@ namespace fractalgen
 		}
 		
 		public static void save_to_file(){
-			List<string> verbList = new List<string>()
+			//strings array
+			string [] wordsList = new string[]
 			{
 				"who: "+String.Join("; ", who.ToArray()),
 				"which: "+String.Join("; ", which.ToArray()),
 				"how: "+String.Join("; ", how.ToArray()),
 				"doit: "+String.Join("; ", doit.ToArray())
 			};
-			
+
 			try{
-				//System.IO.File.WriteAllLines("fractalgen_words.txt", verbList);
-				string [] verbList_arr = verbList.ConvertAll( x => x.ToString() ).ToArray();
-				System.IO.File.WriteAllLines("fractalgen_words.txt", verbList_arr);
+				System.IO.File.WriteAllLines("fractalgen_words.txt", wordsList);
 				Console.WriteLine("fractalgen_words.txt successfully saved");
 			}catch (Exception e){
 				Console.WriteLine("Error saving fractalgen_words.txt: "+e.ToString());
@@ -153,16 +166,14 @@ namespace fractalgen
 		{
 			bool save = false;
 			if (File.Exists("fractalgen_words.txt")) {												//if exists - take words from this file
-				//Console.WriteLine("fractalgen_words.txt - The file exists.");
+				Console.WriteLine("fractalgen_words.txt - The file exists. Using words from this file...");
 				string[] readText = File.ReadAllLines("fractalgen_words.txt");
-				//Console.WriteLine("array length: "+readText.Length);
 				if(readText.Length==0){
 					set_default_words();
 					save = true;
 				}
 				else{
 					for(int str = 0; str<readText.Length; str++){
-						//Console.WriteLine("\n\ncurrent string: "+readText[str]);
 						int len = readText[str].Length;
 					
 						//add words from the file to empty lists
@@ -221,9 +232,9 @@ namespace fractalgen
 		Color col;
 		Color[] colors;
 
-		public string GenerateToFile(ref int w, ref int h)//PNG width and height from main_ function, picture size, bytes, filesize, bitlength
+		public string GenerateToFile(ref string path, ref int w, ref int h)//PNG width and height from main_ function, picture size, bytes, filesize, bitlength
 		{
-			//System.Console.WriteLine("Generating PNG: width {0}, height {1}", w, h);
+			//System.Console.WriteLine("Generating PNG: path: {0}, width {1}, height {2}", path, w, h);
 
 			Random rnd = new Random();
 			Byte[] clr = new Byte[28];
@@ -281,8 +292,6 @@ namespace fractalgen
 			//fill fractal
 			
 			colors = new Color[2];
-//			colors[0] = Color.FromArgb(r.Next()|0x808080);
-//			colors[1] = Color.FromArgb(r.Next()&0x3f3f3f);
 
 			//random two rgba colors - for fractal
 			colors[0] = Color.FromArgb(
@@ -291,7 +300,6 @@ namespace fractalgen
 				r.Next()%255, r.Next()%255, r.Next()%255	//R, G, B
 			);	
 			colors[1] = Color.FromArgb(
-				//r.Next()%255,
 				255-r.Next()%255/8,							//low transparency
 				r.Next()%255, r.Next()%255, r.Next()%255	//rgb
 			);
@@ -307,21 +315,6 @@ namespace fractalgen
 			//fill top and bottom text...
 			int text_size = 22; 											//by default fontsize for text size is 22
 			
-/*
-			//change font size, by PNG width
-			if(w>=1920){text_size = 22;}
-			else if(w>=1366){text_size = 18;}
-			else if(w>=800){text_size = 12;}
-			else if(w>=640){text_size = 10;}
-			else if(w>=300){text_size = 8;}
-			else if(w>=150){text_size = 8;}
-			else{text_size = 0;}
-*/
-/*
-			//Можно обойтись одной операцией деления и одной операцией округления
-			text_size = (int)Math.Floor((double)((w+h)/100.0));
-			text_size = (text_size>8)	?text_size :0;
-*/
 			//change font size, by PNG width and height
 			text_size = (w+h) >> 7; 			// divide by 128 via shifting
 			if (text_size < 8)	text_size = 0;
@@ -406,6 +399,7 @@ namespace fractalgen
 			//If image size low, like 150x150, and text is multistring, background for text will be multistring too.
 			//top and bottom text filled with background.
 
+		
 		//Emulate LSB noise on bitmap - for prevent "frequency analysis" by the colors in PNG.
 			Bitmap newBitmap = new Bitmap(b, b.Width, b.Height);
 			Color actualColor;
@@ -415,46 +409,42 @@ namespace fractalgen
 			var newB = 0;
 			var randvalue = 0;			//define randvalue
 
+			int half_byte = 0;
 			for (int i = 0; i < b.Width; i++)		//for each line
 			{
 				for (int j = 0; j < b.Height; j++)	//and each pixel in line
 				{
+					if(half_byte>=8){								//int is int32 and have 4 bytes (32 bits) = 8 half-bytes
+						half_byte=1;
+						randvalue = r.Next();
+					}
+					else{
+						randvalue = randvalue>>4;
+						half_byte++;
+					}
 					//get the pixel from the b image
-					randvalue = r.Next();					//generate random value
 					actualColor = b.GetPixel(i, j);			//get ARGB color for this pixel
-					//System.Console.WriteLine("actualColor = {0}", actualColor); //display colors for this pixel. Color in actualColor.A, actualColor.R, etc...
-					
-					if (
-						r.Next()%2==1	//if 1 and not 0
-					){
-						//change 1 last bit in the byte for each color
-						newA = (actualColor.A!=255) ? actualColor.A+1 : actualColor.A-1; //add one bit, if color is lesser than 255 or subtract this bit
-						newR = (actualColor.R!=255) ? actualColor.R+1 : actualColor.R-1;
-						newG = (actualColor.G!=255) ? actualColor.G+1 : actualColor.G-1;
-						newB = (actualColor.B!=255) ? actualColor.B+1 : actualColor.B-1;
-				
-						newBitmap.SetPixel(i, j, Color.FromArgb(newA, newR, newG, newB));	//set pixel in bitmap
-						//just display color values
-						//System.Console.WriteLine("\nold actualcolor = {1},\n" + "newcolor = {0},\n" + "actualColor.B = {2},\n" + "(actualColor.B!=255) = {3}\n", Color.FromArgb(newA, newR, newG, newB),	actualColor, actualColor.B,	actualColor.B<255);
 
-						//newBitmap.SetPixel(i, j, Color.FromArgb(0,0,0,0));	//just write black pixel
-					}
-					else{//if 0 and not 1
-						newBitmap.SetPixel(i, j, actualColor);	//leave pixel "AS IS"
-						//newBitmap.SetPixel(i, j, Color.FromArgb(255,255,255,255)); //just write white pixel						
-					}
+					//change 1 last bit in the byte for each color
+					newA = (actualColor.A!=255) ? actualColor.A+( randvalue			%2 ) : actualColor.A-( randvalue		%2 ); //add one bit, if color is lesser than 255 or subtract this bit
+					newR = (actualColor.R!=255) ? actualColor.R+( ( randvalue>>1 )	%2 ) : actualColor.R-( ( randvalue>>1 )	%2 );
+					newG = (actualColor.G!=255) ? actualColor.G+( ( randvalue>>2 )	%2 ) : actualColor.G-( ( randvalue>>2 )	%2 );
+					newB = (actualColor.B!=255) ? actualColor.B+( ( randvalue>>3 )	%2 ) : actualColor.B-( ( randvalue>>3 )	%2 );
+
+					newBitmap.SetPixel(i, j, Color.FromArgb(newA, newR, newG, newB));	//set pixel in bitmap
 				}
 			}
 			//bits for colors in bitmap was been changed randomly...
 			
-			//b.Save(Guid.NewGuid().ToString() + ".png"); 				//save previous not modified picture, as png-file
-			//newBitmap.Save(Guid.NewGuid().ToString() + ".png"); 		//save modified bitmap with LSB noise, as png-file.
-			string pathway = "containers"+Path.DirectorySeparatorChar+Guid.NewGuid().ToString() + ".png";
-			newBitmap.Save(pathway); 		//save modified bitmap with LSB noise, as png-file.
-			string saved = "(width = "+w+", height = "+h+")\n"+"Saved as: "+pathway;
+			string pathway = ((path=="")?"":path+Path.DirectorySeparatorChar)+Guid.NewGuid().ToString();
+			
+			//b.Save(pathway+"_orig.png"); 																			//save previous not modified picture, as png-file
+			newBitmap.Save(pathway+".png");																			//save modified bitmap with LSB noise, as png-file.
+			//now, this avaliable for comparison
+
+			string saved = "(width = "+w+", height = "+h+")\n"+"Saved as: "+pathway+".png";
 			Console.WriteLine(saved);
 			return saved;
-			//now, this avaliable for comparison
 		}
 
 		static float[] Rotate(float[] p, float a)
